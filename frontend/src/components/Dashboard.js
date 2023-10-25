@@ -9,9 +9,19 @@ import {
 	deleteFileFromS3,
 	generatePresignedUrl,
 } from "./s3Utils.js";
+import { useNavigate } from "react-router-dom";
 import { formatBytes, formatDate } from "../Utils.js";
 
 export default function Dashboard() {
+
+	const isUserLoggedIn = !!localStorage.getItem('token')
+	const navigate = useNavigate();
+
+	const handleLogout = () => {
+		localStorage.removeItem('token')
+		navigate('/login');
+	}
+
 	const [files, setFiles] = useState([]);
 	const [uploading, setUploading] = useState(false);
 
@@ -78,8 +88,6 @@ export default function Dashboard() {
 
 			tempInput.select();
 
-			document.execCommand("copy");
-
 			document.body.removeChild(tempInput);
 
 			console.log("URL copied to clipboard:", presignedUrl);
@@ -90,22 +98,23 @@ export default function Dashboard() {
 
 	return (
 		<div className="mt-5 max-w-screen-xl mx-auto px-4 md:px-8">
-			<div className="items-start justify-between md:flex">
-				<div className="flex items-center">
+			<div className="flex flex-row  items-start justify-between">
+				<div className="flex items-center hover:scale-125 transition-all">
 					<img src={LogoImage} alt="Logo" className="h-8 mr-2" />{" "}
 					<h4
 						href="/"
-						className="cursor-pointer text-gray-800 text-2xl font-bold hover:scale-125 transition-all"
+						className="cursor-pointer text-gray-800 text-2xl font-bold"
 					>
 						fyles.
 					</h4>
+
 				</div>
-				<div className="mt-3 md:mt-0">
+				<div className="mt-0 flex items-center text-sm">
 					<label
 						htmlFor="file-input"
 						className={`cursor-pointer inline-block px-4 py-2 text-black duration-150 font-medium bg-gray-300 rounded-lg ${
 							uploading ? "animate-pulse" : "hover:drop-shadow-2xl"
-						} md:text-sm`}
+						}`}
 					>
 						{uploading ? "Uploading..." : "Add File"}
 					</label>
@@ -116,6 +125,11 @@ export default function Dashboard() {
 						onChange={handleUpload}
 						disabled={uploading}
 					/>
+
+					<button className="pl-3"
+					onClick={handleLogout}>
+						<svg className="w-5 h-5 text-black "xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 15"> <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 7.5h11m0 0L8 3.786M12 7.5l-4 3.714M12 1h3c.53 0 1.04.196 1.414.544.375.348.586.82.586 1.313v9.286c0 .492-.21.965-.586 1.313A2.081 2.081 0 0 1 15 14h-3"/> </svg>
+					</button>
 				</div>
 			</div>
 			<div className="mt-12 relative h-max overflow-auto">

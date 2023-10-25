@@ -9,7 +9,6 @@ const app = express();
 require('dotenv').config()
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY
-console.log(SECRET_KEY)
 const dbURI = "mongodb://127.0.0.1:27017/test";
 
 mongoose
