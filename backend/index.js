@@ -44,8 +44,6 @@ app.post("/register", async (req, res) => {
 
 //REGISTER USER
 
-
-
 app.post("/register", async (req, res) => {
 	try {
 		const { username, password } = req.body;
@@ -149,4 +147,3 @@ app.post("/uploadobject", authenticateToken, async (req, res) => {
 		res.status(500).json({ error: "Error uploading object" + err });
 	}
 });
-module.exports = app;
