@@ -22,9 +22,12 @@ export default function Dashboard() {
 
 	const fetchS3Objects = async () => {
 		try {
-			const response = await fetch(process.env.BACKEND_URL+"/listobjects", {
-				headers: { Authorization: localStorage.getItem("token") },
-			});
+			const response = await fetch(
+				process.env.REACT_APP_BACKEND_URL + "/listobjects",
+				{
+					headers: { Authorization: localStorage.getItem("token") },
+				}
+			);
 			if (response.ok) {
 				const data = await response.json();
 				setFiles(data);
@@ -48,11 +51,14 @@ export default function Dashboard() {
 		formData.append("file", file);
 		setUploading(true);
 		try {
-			const response = await fetch(process.env.BACKEND_URL+"/uploadobject", {
-				method: "POST",
-				body: formData,
-				headers: { Authorization: localStorage.getItem("token") },
-			});
+			const response = await fetch(
+				process.env.REACT_APP_BACKEND_URL + "/uploadobject",
+				{
+					method: "POST",
+					body: formData,
+					headers: { Authorization: localStorage.getItem("token") },
+				}
+			);
 			fetchS3Objects();
 			setUploading(false);
 		} catch (error) {
@@ -63,7 +69,7 @@ export default function Dashboard() {
 	const handleDownload = async (filename) => {
 		try {
 			const response = await fetch(
-				process.env.BACKEND_URL+"/generatepresignedurl",
+				process.env.REACT_APP_BACKEND_URL + "/generatepresignedurl",
 				{
 					method: "POST",
 					headers: {
@@ -85,7 +91,7 @@ export default function Dashboard() {
 	const handleUrl = async (filename) => {
 		try {
 			const response = await fetch(
-				process.env.BACKEND_URL+"/generatepresignedurl",
+				process.env.REACT_APP_BACKEND_URL + "/generatepresignedurl",
 				{
 					method: "POST",
 					headers: {
@@ -110,16 +116,19 @@ export default function Dashboard() {
 	};
 	const handleDelete = async (filename) => {
 		try {
-			const response = await fetch(process.env.BACKEND_URL+"/deleteobject", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: localStorage.getItem("token"),
-				},
-				body: JSON.stringify({
-					filename: filename,
-				}),
-			});
+			const response = await fetch(
+				process.env.REACT_APP_BACKEND_URL + "/deleteobject",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: localStorage.getItem("token"),
+					},
+					body: JSON.stringify({
+						filename: filename,
+					}),
+				}
+			);
 			fetchS3Objects();
 		} catch {}
 	};
@@ -225,7 +234,6 @@ export default function Dashboard() {
 					</tbody>
 				</table>
 			</div>
-
 		</div>
 	);
 }

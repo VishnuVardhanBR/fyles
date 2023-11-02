@@ -2,6 +2,8 @@ import Logo from "../images/logo.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+// require("dotenv").config();
+
 export default function LoginPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -10,10 +12,14 @@ export default function LoginPage() {
 	const handleLogin = async (event) => {
 		event.preventDefault();
 		try {
-			const response = await axios.post(process.env.BACKEND_URL+"/login", {
-				username,
-				password,
-			});
+			console.log(process.env.REACT_APP_BACKEND_URL + "/login");
+			const response = await axios.post(
+				process.env.REACT_APP_BACKEND_URL + "/login",
+				{
+					username,
+					password,
+				}
+			);
 			alert("Login Succesful");
 			const token = response.data.token;
 			setUsername("");
@@ -23,7 +29,7 @@ export default function LoginPage() {
 			window.location.reload();
 		} catch (error) {
 			alert("Error while logging in");
-			console.log("Error while logging in");
+			console.log("Error while logging in" + error);
 		}
 	};
 

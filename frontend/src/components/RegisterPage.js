@@ -12,7 +12,7 @@ export default function RegisterPage() {
 	const handleRegister = (event) => {
 		event.preventDefault();
 		axios
-			.post(process.env.BACKEND_URL+"/register", { username, password })
+			.post(process.env.REACT_APP_BACKEND_URL+"/register", { username, password })
 			.then(() => {
 				alert("Registration successful");
 				setUsername("");
