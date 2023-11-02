@@ -1,26 +1,28 @@
 import Logo from "../images/logo.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 export default function LoginPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const navigate = useNavigate();
 
-	const handleLogin = async(event) => {
+	const handleLogin = async (event) => {
 		event.preventDefault();
-		try{
-			const response = await axios.post('http://localhost:3001/login', {username, password})
-			alert("Login Succesful")
-			const token = response.data.token
-			setUsername('')
-			setPassword('')
-			navigate('/dashboard')
-			window.location.reload()
-			localStorage.setItem('token', token)
-		}
-		catch(error){
-			alert('Error while logging in');
+		try {
+			const response = await axios.post("http://localhost:3001/login", {
+				username,
+				password,
+			});
+			alert("Login Succesful");
+			const token = response.data.token;
+			setUsername("");
+			setPassword("");
+			localStorage.setItem("token", token);
+			navigate("/dashboard");
+			window.location.reload();
+		} catch (error) {
+			alert("Error while logging in");
 			console.log("Error while logging in");
 		}
 	};
@@ -28,7 +30,7 @@ export default function LoginPage() {
 	return (
 		<div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
 			<div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <img className="mx-auto h-10 w-auto" src={Logo} alt="fyles." />
+				<img className="mx-auto h-10 w-auto" src={Logo} alt="fyles." />
 				<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
 					Sign in to your account
 				</h2>
@@ -51,7 +53,7 @@ export default function LoginPage() {
 								autoComplete="username"
 								required
 								value={username}
-								onChange={(e)=>setUsername(e.target.value)}
+								onChange={(e) => setUsername(e.target.value)}
 								className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
 							/>
 						</div>
@@ -82,7 +84,7 @@ export default function LoginPage() {
 								autoComplete="current-password"
 								required
 								value={password}
-								onChange={(e)=>setPassword(e.target.value)}
+								onChange={(e) => setPassword(e.target.value)}
 								className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
 							/>
 						</div>

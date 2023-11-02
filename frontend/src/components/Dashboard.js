@@ -3,96 +3,79 @@ import DeleteIcon from "../images/trash-solid.png";
 import LinkIcon from "../images/link-solid.png";
 import React, { useState, useEffect } from "react";
 import LogoImage from "../images/logo.png";
-import {
-	listS3Objects,
-	uploadFileToS3,
-	deleteFileFromS3,
-	generatePresignedUrl,
-} from "./s3Utils.js";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { formatBytes, formatDate } from "../Utils.js";
 
 export default function Dashboard() {
-
-	const isUserLoggedIn = !!localStorage.getItem('token')
+	// const isUserLoggedIn = !!localStorage.getItem('token')
 	const navigate = useNavigate();
 
 	const handleLogout = () => {
-		localStorage.removeItem('token')
-		navigate('/login');
-	}
+		localStorage.removeItem("token");
+		navigate("/login");
+	};
 
 	const [files, setFiles] = useState([]);
 	const [uploading, setUploading] = useState(false);
 
-	useEffect(() => {
-		const fetchS3Objects = async () => {
-			try {
-				const data = await listS3Objects("fylesstorage");
+	const fetchS3Objects = async () => {
+		try {
+			const response = await fetch("http://localhost:3001/listobjects", {
+				headers: { Authorization: localStorage.getItem("token") },
+			});
+			if (response.ok) {
+				const data = await response.json();
 				setFiles(data);
-			} catch (error) {
-				console.error(error);
+			} else {
+				throw new Error("Network response was not ok");
 			}
-		};
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	useEffect(() => {
+		// console.log(localStorage.getItem("token"))
 		fetchS3Objects();
 	}, []);
 
 	const handleUpload = async (event) => {
+		// console.log(localStorage.getItem("token"));
 		const file = event.target.files[0];
-		if (file) {
-			try {
-				setUploading(true);
-				await uploadFileToS3("fylesstorage", file);
-				const data = await listS3Objects("fylesstorage");
-				setFiles(data);
-			} catch (error) {
-				console.error("Upload error:", error);
-			} finally {
-				setUploading(false);
-			}
-		} else {
-			console.error("No file selected for upload.");
-		}
-	};
-
-	const handleDelete = async (fileName) => {
-		if (window.confirm(`Are you sure you want to delete ${fileName}?`)) {
-			try {
-				await deleteFileFromS3("fylesstorage", fileName);
-				const data = await listS3Objects("fylesstorage");
-				setFiles(data);
-			} catch (error) {
-				console.error("Delete error:", error);
-			}
-		}
-	};
-
-	const handleDownload = async (fileName) => {
+		const formData = new FormData();
+		formData.append("file", file);
 		try {
-			const presignedUrl = await generatePresignedUrl("fylesstorage", fileName);
-			window.location.href = presignedUrl;
+			const response = await fetch("http://localhost:3001/uploadobject", {
+				method: "POST",
+				body: formData,
+				headers: { Authorization: localStorage.getItem("token") },
+			});
+			fetchS3Objects();
 		} catch (error) {
-			console.error("Error generating pre-signed URL:", error);
+			// Handle error
 		}
 	};
 
-	const handleUrl = async (fileName) => {
+	const handleDownload = async (name) => {
 		try {
-			const presignedUrl = await generatePresignedUrl("fylesstorage", fileName);
-
-			const tempInput = document.createElement("input");
-
-			tempInput.value = presignedUrl;
-
-			document.body.appendChild(tempInput);
-
-			tempInput.select();
-
-			document.body.removeChild(tempInput);
-
-			console.log("URL copied to clipboard:", presignedUrl);
+			const response = await fetch(
+				"http://localhost:3001/generatepresignedurl",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: localStorage.getItem("token"),
+					},
+					body: JSON.stringify({
+						filename: name,
+					}),
+				}
+			);
+			const data = await response.json();
+			window.location.href = data.url;
 		} catch (error) {
-			console.error("Error generating pre-signed URL:", error);
+			// Handle error
 		}
 	};
 
@@ -107,7 +90,6 @@ export default function Dashboard() {
 					>
 						fyles.
 					</h4>
-
 				</div>
 				<div className="mt-0 flex items-center text-sm">
 					<label
@@ -126,9 +108,22 @@ export default function Dashboard() {
 						disabled={uploading}
 					/>
 
-					<button className="pl-3"
-					onClick={handleLogout}>
-						<svg className="w-5 h-5 text-black "xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 15"> <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 7.5h11m0 0L8 3.786M12 7.5l-4 3.714M12 1h3c.53 0 1.04.196 1.414.544.375.348.586.82.586 1.313v9.286c0 .492-.21.965-.586 1.313A2.081 2.081 0 0 1 15 14h-3"/> </svg>
+					<button className="pl-3" onClick={handleLogout}>
+						<svg
+							className="w-5 h-5 text-black "
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 18 15"
+						>
+							{" "}
+							<path
+								stroke="currentColor"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M1 7.5h11m0 0L8 3.786M12 7.5l-4 3.714M12 1h3c.53 0 1.04.196 1.414.544.375.348.586.82.586 1.313v9.286c0 .492-.21.965-.586 1.313A2.081 2.081 0 0 1 15 14h-3"
+							/>{" "}
+						</svg>
 					</button>
 				</div>
 			</div>
@@ -145,11 +140,15 @@ export default function Dashboard() {
 					<tbody className="text-gray-600 divide-y">
 						{files.map((file, index) => (
 							<tr key={index}>
-								<td className="pr-6 py-4 whitespace-nowrap">{file.Key}</td>
+								<td className="pr-6 py-4 whitespace-nowrap">
+									{file.Key.split("/")[1]}
+								</td>
 								<td className="pr-6 py-4 whitespace-nowrap">
 									{formatDate(file.LastModified)}
 								</td>
-								<td className="pr-6 py-4 whitespace-nowrap">{"Vain"}</td>
+								<td className="pr-6 py-4 whitespace-nowrap">
+									{file.Key.split("/")[0]}
+								</td>
 								<td className="pr-6 py-4 whitespace-nowrap">
 									{formatBytes(file.Size)}
 								</td>
@@ -157,7 +156,7 @@ export default function Dashboard() {
 									<img
 										src={DownloadIcon}
 										alt=""
-										onClick={() => handleDownload(file.Key)}
+										onClick={() => handleDownload(file.Key.split("/")[1])}
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
 								</td>
@@ -165,14 +164,14 @@ export default function Dashboard() {
 									<img
 										src={DeleteIcon}
 										alt=""
-										onClick={() => handleDelete(file.Key)}
+										// onClick={() => handleDelete(file.Key)}
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
 								</td>
 								<td className="whitespace-nowrap">
 									<img
 										src={LinkIcon}
-										onClick={() => handleUrl(file.Key)}
+										// onClick={() => handleUrl(file.Key)}
 										alt=""
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
