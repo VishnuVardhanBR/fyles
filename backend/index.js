@@ -149,3 +149,4 @@ app.post("/uploadobject", authenticateToken, async (req, res) => {
 		res.status(500).json({ error: "Error uploading object" + err });
 	}
 });
+module.exports = app;
