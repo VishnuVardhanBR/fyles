@@ -13,7 +13,7 @@ import authenticateToken from "./authenticateToken.js";
 
 const app = express();
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
-const dbURI = "mongodb://127.0.0.1:27017/test";
+const dbURI = process.env.DB_URI;
 
 mongoose
 	.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -30,7 +30,22 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(expressfileupload());
 
+app.post("/register", async (req, res) => {
+	try {
+		const { username, password } = req.body;
+		const hashedPassword = await bcrypt.hash(password, 10);
+		const newUser = new User({ username: username, password: hashedPassword });
+		await newUser.save();
+		res.status(201).json({ message: "User created" });
+	} catch (error) {
+		res.status(500).json({ error: "Error in sign up" + error });
+	}
+});
+
 //REGISTER USER
+
+
+
 app.post("/register", async (req, res) => {
 	try {
 		const { username, password } = req.body;
@@ -103,9 +118,7 @@ app.post("/generatepresignedurl", authenticateToken, async (req, res) => {
 	try {
 		const token = req.headers.authorization;
 		const username = getUsername(token);
-		// console.log(req)
 		const url = await generatePresignedUrl(username + "/" + req.body.filename);
-		console.log(url)
 		res.status(200).json({ url: url });
 	} catch (err) {
 		res.status(500).json({ error: "Error generating presigned url" });

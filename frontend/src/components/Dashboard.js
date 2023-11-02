@@ -13,6 +13,7 @@ export default function Dashboard() {
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
+
 		navigate("/login");
 	};
 
@@ -21,7 +22,7 @@ export default function Dashboard() {
 
 	const fetchS3Objects = async () => {
 		try {
-			const response = await fetch("http://localhost:3001/listobjects", {
+			const response = await fetch(process.env.BACKEND_URL+"/listobjects", {
 				headers: { Authorization: localStorage.getItem("token") },
 			});
 			if (response.ok) {
@@ -45,22 +46,24 @@ export default function Dashboard() {
 		const file = event.target.files[0];
 		const formData = new FormData();
 		formData.append("file", file);
+		setUploading(true);
 		try {
-			const response = await fetch("http://localhost:3001/uploadobject", {
+			const response = await fetch(process.env.BACKEND_URL+"/uploadobject", {
 				method: "POST",
 				body: formData,
 				headers: { Authorization: localStorage.getItem("token") },
 			});
 			fetchS3Objects();
+			setUploading(false);
 		} catch (error) {
 			// Handle error
 		}
 	};
 
-	const handleDownload = async (name) => {
+	const handleDownload = async (filename) => {
 		try {
 			const response = await fetch(
-				"http://localhost:3001/generatepresignedurl",
+				process.env.BACKEND_URL+"/generatepresignedurl",
 				{
 					method: "POST",
 					headers: {
@@ -68,7 +71,7 @@ export default function Dashboard() {
 						Authorization: localStorage.getItem("token"),
 					},
 					body: JSON.stringify({
-						filename: name,
+						filename: filename,
 					}),
 				}
 			);
@@ -79,6 +82,47 @@ export default function Dashboard() {
 		}
 	};
 
+	const handleUrl = async (filename) => {
+		try {
+			const response = await fetch(
+				process.env.BACKEND_URL+"/generatepresignedurl",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: localStorage.getItem("token"),
+					},
+					body: JSON.stringify({
+						filename: filename,
+					}),
+				}
+			);
+			const data = await response.json();
+			const tempInput = document.createElement("input");
+			tempInput.value = data.url;
+			document.body.appendChild(tempInput);
+			tempInput.select();
+			document.execCommand("copy");
+			document.body.removeChild(tempInput);
+		} catch (error) {
+			// Handle error
+		}
+	};
+	const handleDelete = async (filename) => {
+		try {
+			const response = await fetch(process.env.BACKEND_URL+"/deleteobject", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: localStorage.getItem("token"),
+				},
+				body: JSON.stringify({
+					filename: filename,
+				}),
+			});
+			fetchS3Objects();
+		} catch {}
+	};
 	return (
 		<div className="mt-5 max-w-screen-xl mx-auto px-4 md:px-8">
 			<div className="flex flex-row  items-start justify-between">
@@ -164,14 +208,14 @@ export default function Dashboard() {
 									<img
 										src={DeleteIcon}
 										alt=""
-										// onClick={() => handleDelete(file.Key)}
+										onClick={() => handleDelete(file.Key.split("/")[1])}
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
 								</td>
 								<td className="whitespace-nowrap">
 									<img
 										src={LinkIcon}
-										// onClick={() => handleUrl(file.Key)}
+										onClick={() => handleUrl(file.Key.split("/")[1])}
 										alt=""
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
@@ -181,6 +225,7 @@ export default function Dashboard() {
 					</tbody>
 				</table>
 			</div>
+
 		</div>
 	);
 }

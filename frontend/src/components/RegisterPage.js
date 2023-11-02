@@ -12,7 +12,7 @@ export default function RegisterPage() {
 	const handleRegister = (event) => {
 		event.preventDefault();
 		axios
-			.post("http://localhost:3001/register", { username, password })
+			.post(process.env.BACKEND_URL+"/register", { username, password })
 			.then(() => {
 				alert("Registration successful");
 				setUsername("");

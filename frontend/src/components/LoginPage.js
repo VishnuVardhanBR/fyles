@@ -10,7 +10,7 @@ export default function LoginPage() {
 	const handleLogin = async (event) => {
 		event.preventDefault();
 		try {
-			const response = await axios.post("http://localhost:3001/login", {
+			const response = await axios.post(process.env.BACKEND_URL+"/login", {
 				username,
 				password,
 			});
