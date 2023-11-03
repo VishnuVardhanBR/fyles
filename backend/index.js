@@ -1,15 +1,15 @@
-import express from "express";
-import mongoose from "mongoose";
-import bodyParser from "body-parser";
-import cors from "cors";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import User from "./models/userSchema.js";
-import dotenv from "dotenv";
-dotenv.config();
-import expressfileupload from "express-fileupload";
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const User = require("./models/userSchema.js");
+const dotenv = require("dotenv");
+// dotenv.config();
+const expressfileupload = require("express-fileupload");
 
-import authenticateToken from "./authenticateToken.js";
+const authenticateToken = require("./authenticateToken.js");
 
 const app = express();
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -84,12 +84,13 @@ app.post("/login", async (req, res) => {
 	}
 });
 
-import {
+const s3Utils = require("./s3Utils.js");
+const {
 	listS3Objects,
 	uploadFileToS3,
 	generatePresignedUrl,
 	deleteFileFromS3,
-} from "./s3Utils.js";
+} = s3Utils;
 
 function getUsername(token) {
 	const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
