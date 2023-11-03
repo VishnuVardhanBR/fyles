@@ -18,8 +18,8 @@ const dbURI = process.env.DB_URI;
 mongoose
 	.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 	.then(() => {
-		app.listen(3001, () => {
-			console.log("Server is connected to port 3001 and connected to MongoDB");
+		app.listen(8080, () => {
+			console.log("Server is connected to port 8080 and connected to MongoDB");
 		});
 	})
 	.catch((error) => {
