@@ -15,14 +15,6 @@ const app = express();
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 const dbURI = process.env.DB_URI;
 
-const fs = require('fs');
-
-fs.readdir("./node_modules/mongoose/node_modules/mongodb/lib/", (err, files) => {
-  files.forEach(file => {
-    console.log(file);
-  });
-});
-
 mongoose
 	.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 	.then(() => {
