@@ -28,7 +28,7 @@ export default function LoginPage() {
 			navigate("/dashboard");
 			window.location.reload();
 		} catch (error) {
-			alert("Error while logging in");
+			alert("Error while logging in"+error);
 			console.log("Error while logging in" + error);
 		}
 	};
