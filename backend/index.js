@@ -42,20 +42,6 @@ app.post("/register", async (req, res) => {
 	}
 });
 
-//REGISTER USER
-
-app.post("/register", async (req, res) => {
-	try {
-		const { username, password } = req.body;
-		const hashedPassword = await bcrypt.hash(password, 10);
-		const newUser = new User({ username: username, password: hashedPassword });
-		await newUser.save();
-		res.status(201).json({ message: "User created" });
-	} catch (error) {
-		res.status(500).json({ error: "Error in sign up" + error });
-	}
-});
-
 //GET LOGIN
 app.post("/login", async (req, res) => {
 	try {
