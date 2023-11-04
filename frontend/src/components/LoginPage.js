@@ -20,7 +20,7 @@ export default function LoginPage() {
 					password,
 				}
 			);
-			alert("Login Succesful");
+			alert("Login Successful");
 			const token = response.data.token;
 			setUsername("");
 			setPassword("");
@@ -28,7 +28,7 @@ export default function LoginPage() {
 			navigate("/dashboard");
 			window.location.reload();
 		} catch (error) {
-			alert("Error while logging in"+error);
+			alert("Error while logging in");
 			console.log("Error while logging in" + error);
 		}
 	};
