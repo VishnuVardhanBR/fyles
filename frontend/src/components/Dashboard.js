@@ -188,13 +188,19 @@ export default function Dashboard() {
 							<th className="py-3 pr-6">Date Added</th>
 							<th className="py-3 pr-6">Added By</th>
 							<th className="py-3 pr-6">File Size</th>
+							<th className="py-3">Actions</th>
 						</tr>
 					</thead>
 					<tbody className="text-gray-600 divide-y">
 						{files.map((file, index) => (
 							<tr key={index}>
-								<td className="pr-6 py-4 whitespace-nowrap">
-									{file.Key.split("/")[1]}
+								<td
+									className="pr-6 py-4 whitespace-nowrap text-ellipsis overflow-hidden max-w-xs"
+									style={{ maxWidth: "200px" }}
+								>
+									{file.Key.split("/")[1].length > 32
+										? `${file.Key.split("/")[1].substring(0, 29)}...`
+										: file.Key.split("/")[1]}
 								</td>
 								<td className="pr-6 py-4 whitespace-nowrap">
 									{formatDate(file.LastModified)}
@@ -205,27 +211,24 @@ export default function Dashboard() {
 								<td className="pr-6 py-4 whitespace-nowrap">
 									{formatBytes(file.Size)}
 								</td>
-								<td className="whitespace-nowrap">
+								{/* Icons container */}
+								<td className="py-4 flex justify-start space-x-4">
 									<img
 										src={DownloadIcon}
-										alt=""
+										alt="Download"
 										onClick={() => handleDownload(file.Key.split("/")[1])}
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
-								</td>
-								<td className="whitespace-nowrap">
 									<img
 										src={DeleteIcon}
-										alt=""
+										alt="Delete"
 										onClick={() => handleDelete(file.Key.split("/")[1])}
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
-								</td>
-								<td className="whitespace-nowrap">
 									<img
 										src={LinkIcon}
 										onClick={() => handleUrl(file.Key.split("/")[1])}
-										alt=""
+										alt="Link"
 										className="cursor-pointer h-5 hover:scale-125 transition-all"
 									/>
 								</td>
