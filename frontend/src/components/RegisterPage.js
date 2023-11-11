@@ -6,11 +6,28 @@ import { useNavigate } from "react-router-dom";
 export default function RegisterPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [repeatPassword, setRepeatPassword] = useState("");
 	const [registerKey, setRegisterKey] = useState("");
 	const navigate = useNavigate();
 
 	const handleRegister = (event) => {
 		event.preventDefault();
+
+		const passwordRegex =
+			/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+		if (!passwordRegex.test(password)) {
+			alert(
+				"Password must be at least 8 characters long and include 1 number and 1 special character."
+			);
+			return;
+		}
+
+		if (password !== repeatPassword) {
+			alert("Passwords do not match.");
+			return;
+		}
+
 		axios
 			.post(process.env.REACT_APP_BACKEND_URL + "/register", {
 				username,
@@ -21,6 +38,8 @@ export default function RegisterPage() {
 				alert("Registration successful");
 				setUsername("");
 				setPassword("");
+				setRepeatPassword("");
+				setRegisterKey("");
 				navigate("/login");
 			})
 			.catch((error) => {
@@ -96,6 +115,8 @@ export default function RegisterPage() {
 								id="password"
 								name="repeat-password"
 								type="password"
+								value={repeatPassword}
+								onChange={(e) => setRepeatPassword(e.target.value)}
 								autoComplete="repeat-password"
 								required
 								className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
