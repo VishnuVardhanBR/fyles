@@ -12,7 +12,7 @@ export default function LoginPage() {
 	const handleLogin = async (event) => {
 		event.preventDefault();
 		try {
-			console.log(process.env.REACT_APP_BACKEND_URL + "/login");
+			// console.log(process.env.REACT_APP_BACKEND_URL + "/login");
 			const response = await axios.post(
 				process.env.REACT_APP_BACKEND_URL + "/login",
 				{
@@ -29,7 +29,7 @@ export default function LoginPage() {
 			window.location.reload();
 		} catch (error) {
 			alert("Error while logging in");
-			console.log("Error while logging in" + error);
+			// console.log("Error while logging in" + error);
 		}
 	};
 

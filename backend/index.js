@@ -31,16 +31,21 @@ app.use(cors());
 app.use(expressfileupload());
 
 app.post("/register", async (req, res) => {
-	try {
-		const { username, password } = req.body;
-		const hashedPassword = await bcrypt.hash(password, 10);
-		const newUser = new User({ username: username, password: hashedPassword });
-		await newUser.save();
-		res.status(201).json({ message: "User created" });
-	} catch (error) {
-		res.status(500).json({ error: "Error in sign up" + error });
-	}
+    try {
+        const { username, password, registerKey } = req.body;
+        if (registerKey !== process.env.REGISTER_KEY) {
+            return res.status(401).json({ error: "Invalid registration key" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, password: hashedPassword });
+        await newUser.save();
+
+        res.status(201).json({ message: "User created" });
+    } catch (error) {
+        res.status(500).json({ error: "Error in sign up" + error });
+    }
 });
+
 
 //GET LOGIN
 app.post("/login", async (req, res) => {

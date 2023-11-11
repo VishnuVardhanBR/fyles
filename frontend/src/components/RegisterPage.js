@@ -6,13 +6,17 @@ import { useNavigate } from "react-router-dom";
 export default function RegisterPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [registerKey, setRegisterKey] = useState("");
 	const navigate = useNavigate();
-
 
 	const handleRegister = (event) => {
 		event.preventDefault();
 		axios
-			.post(process.env.REACT_APP_BACKEND_URL+"/register", { username, password })
+			.post(process.env.REACT_APP_BACKEND_URL + "/register", {
+				username,
+				password,
+				registerKey,
+			})
 			.then(() => {
 				alert("Registration successful");
 				setUsername("");
@@ -20,8 +24,8 @@ export default function RegisterPage() {
 				navigate("/login");
 			})
 			.catch((error) => {
-				alert('Error')
-				console.log('Unable to register')
+				alert("Error");
+				console.log("Unable to register");
 			});
 	};
 
@@ -49,7 +53,7 @@ export default function RegisterPage() {
 								name="username"
 								type="text"
 								value={username}
-								onChange={(e)=>setUsername(e.target.value)}
+								onChange={(e) => setUsername(e.target.value)}
 								autoComplete="username"
 								required
 								className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
@@ -71,7 +75,7 @@ export default function RegisterPage() {
 								name="password"
 								type="password"
 								value={password}
-								onChange={(e)=>setPassword(e.target.value)}
+								onChange={(e) => setPassword(e.target.value)}
 								autoComplete="current-password"
 								required
 								className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
@@ -98,7 +102,27 @@ export default function RegisterPage() {
 							/>
 						</div>
 					</div>
-
+					<div>
+						<div className="flex items-center justify-between">
+							<label
+								htmlFor="register-key"
+								className="block text-sm font-medium leading-6 text-gray-900"
+							>
+								Register Key
+							</label>
+						</div>
+						<div className="mt-2">
+							<input
+								id="register-key"
+								name="register-key"
+								type="password"
+								value={registerKey}
+								onChange={(e) => setRegisterKey(e.target.value)}
+								required
+								className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
+							/>
+						</div>
+					</div>
 					<div>
 						<button
 							type="submit"
