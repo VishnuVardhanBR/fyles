@@ -2,7 +2,7 @@
 
 A cloud storage application aimed for small groups to access shared storage hosted on AWS S3.
 
-[Demo Video]()
+[Demo Video](https://youtu.be/jUkETX8oiUo)
 
 ## Usage
 
